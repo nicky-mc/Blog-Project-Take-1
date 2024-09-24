@@ -25,8 +25,9 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0 5vw;
-  background: #fff;
+  background: dimgray;
   z-index: 9;
+  max-width: fit-content 100%;
 }
 
 .links-container {
@@ -39,13 +40,14 @@ body {
   margin-left: 10px;
   text-decoration: none;
   text-transform: capitalize;
-  color: #000;
+  color: salmon;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 .header {
   margin-top: 60px;
   width: 100%;
   height: calc(100vh - 60px);
-  background: url(../img/header.png);
+  background: url(../img/header.jpeg);
   background-size: cover;
   display: flex;
   justify-content: center;
@@ -57,11 +59,14 @@ body {
 }
 
 .heading {
-  color: #fff;
   text-transform: capitalize;
   font-size: 80px;
   line-height: 60px;
   margin-bottom: 80px;
+  background-color: dimgray;
+  color: salmon;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  max-width: 100%;
 }
 
 .heading .small {
