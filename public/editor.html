@@ -3,22 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,600&display=swap"
-      rel="stylesheet"
-    />
+    <title>Blog : Editor</title>
     <link rel="stylesheet" href="css/editor.css" />
-    <link rel="stylesheet" href="css/home.css" />
   </head>
   <body>
     <div class="banner">
       <input type="file" accept="image/*" id="banner-upload" hidden />
       <label for="banner-upload" class="banner-upload-btn"
-        ><img src="img/logo.png" alt="upload banner" height="100%"" /></label
-      >
-      <img src="img/header.jpeg" alt="" width="100%" />
+        ><img src="img/upload.png" alt="upload banner"
+      /></label>
     </div>
+
     <div class="blog">
       <textarea
         type="text"
@@ -27,14 +22,22 @@
       ></textarea>
       <textarea
         type="text"
+        class="summary"
+        placeholder="Blog summary..."
+      ></textarea>
+      <textarea
+        type="text"
         class="article"
         placeholder="Start writing here..."
       ></textarea>
     </div>
+
     <div class="blog-options">
       <button class="btn dark publish-btn">publish</button>
       <input type="file" accept="image/*" id="image-upload" hidden />
-      <label for="image-upload" class="btn grey upload-btn">Upload Image</label>
+      <label for="image-upload" class="btn upload-btn">Upload Image</label>
     </div>
+
+    <script src="js/editor.js"></script>
   </body>
 </html>

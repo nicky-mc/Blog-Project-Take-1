@@ -1,68 +1,37 @@
 const blogTitleField = document.querySelector(".title");
+const blogSummaryField = document.querySelector(".summary");
 const articleFeild = document.querySelector(".article");
-
-// banner
-const bannerImage = document.querySelector("#banner-upload");
-const banner = document.querySelector(".banner");
-let bannerPath;
-
+const bannerImage = document.querySelector(".banner");
 const publishBtn = document.querySelector(".publish-btn");
-const uploadInput = document.querySelector("#image-upload");
-bannerImage.addEventListener("change", () => {
-  uploadImage(bannerImage, "banner");
+const uploadInput = document.querySelector("#banner-upload");
+
+let bannerPath = "default-banner.jpg";
+
+bannerImage.addEventListener("click", () => {
+  uploadInput.click();
 });
 
 uploadInput.addEventListener("change", () => {
-  uploadImage(uploadInput, "image");
-});
-const uploadImage = (uploadFile, uploadType) => {
-  const [file] = uploadFile.files;
-  if (file && file.type.includes("image")) {
-    const formdata = new FormData();
-    formdata.append("image", file);
+  const formData = new FormData();
+  formData.append("image", uploadInput.files[0]);
 
-    fetch("/upload", {
-      method: "post",
-      body: formdata,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (uploadType == "image") {
-          addImage(data, file.name);
-        } else {
-          bannerPath = `${location.origin}/${data}`;
-          banner.style.backgroundImage = `url("${bannerPath}")`;
-        }
-      });
-  } else {
-    alert("upload Image only");
-  }
-};
-const addImage = (imagepath, alt) => {
-  let curPos = articleFeild.selectionStart;
-  let textToInsert = `\r![${alt}](${imagepath})\r`;
-  articleFeild.value =
-    articleFeild.value.slice(0, curPos) +
-    textToInsert +
-    articleFeild.value.slice(curPos);
-};
-let months = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+  fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      bannerPath = data.imageUrl;
+      bannerImage.style.backgroundImage = `url("${bannerPath}")`;
+    });
+});
 
 publishBtn.addEventListener("click", () => {
-  if (articleFeild.value.length && blogTitleField.value.length) {
+  if (
+    blogTitleField.value.length &&
+    blogSummaryField.value.length &&
+    articleFeild.value.length
+  ) {
     // generating id
     let letters = "abcdefghijklmnopqrstuvwxyz";
     let blogTitle = blogTitleField.value.split(" ").join("-");
@@ -75,22 +44,26 @@ publishBtn.addEventListener("click", () => {
     let docName = `${blogTitle}-${id}`;
     let date = new Date(); // for published at info
 
-    //access firstore with db variable;
-    db.collection("blogs")
-      .doc(docName)
-      .set({
+    fetch("/api/blog", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         title: blogTitleField.value,
         article: articleFeild.value,
+        summary: blogSummaryField.value,
         bannerImage: bannerPath,
-        publishedAt: `${date.getDate()} ${
-          months[date.getMonth()]
-        } ${date.getFullYear()}`,
-      })
-      .then(() => {
-        location.href = `/${docName}`;
+        publishedAt: date.toISOString(),
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Document written");
+        location.href = `/${data.id}`;
       })
       .catch((err) => {
-        console.error(err);
+        console.error("Error adding document: ", err);
       });
   }
 });
