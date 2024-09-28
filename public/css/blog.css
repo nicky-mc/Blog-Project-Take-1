@@ -1,77 +1,38 @@
-* {
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
-body {
-  width: 100%;
-  position: relative;
-  font-family: "poppins", sans-serif;
+header {
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
 }
 
-.navbar {
-  width: 100%;
-  height: 60px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 5vw;
-  background: #fff;
-  z-index: 9;
-}
-
-.links-container {
-  display: flex;
-  list-style: none;
-}
-
-.link {
-  padding: 10px;
-  margin-left: 10px;
+nav a {
+  color: #fff;
   text-decoration: none;
-  text-transform: capitalize;
-  color: #000;
+  padding: 0.5rem;
 }
 
-.banner {
-  width: 100%;
-  height: 400px;
-  position: relative;
-  background: #e7e7e7;
-  background-size: cover;
-  background-position: center;
+main {
+  padding: 2rem;
 }
 
-.blog {
-  width: 70vw;
-  min-width: 400px;
-  height: 100px;
-  display: block;
-  margin: auto;
-  padding: 50px 0;
+#blog-post {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.title {
-  font-size: 50px;
-  font-weight: 600;
+#blog-image {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
 }
 
-.published {
-  font-size: 16px;
-  font-weight: 400;
-  margin: 20px 0 40px;
-}
-
-.published span {
-  font-weight: 700;
-}
-
-.article {
-  font-size: 20px;
-  line-height: 30px;
-  white-space: pre-wrap;
+#blog-content {
+  line-height: 1.8;
 }

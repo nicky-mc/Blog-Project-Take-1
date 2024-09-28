@@ -1,69 +1,74 @@
-const blogTitleField = document.querySelector(".title");
-const blogSummaryField = document.querySelector(".summary");
-const articleFeild = document.querySelector(".article");
-const bannerImage = document.querySelector(".banner");
-const publishBtn = document.querySelector(".publish-btn");
-const uploadInput = document.querySelector("#banner-upload");
-
-let bannerPath = "default-banner.jpg";
-
-bannerImage.addEventListener("click", () => {
-  uploadInput.click();
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("blog-form");
+  form.addEventListener("submit", handleSubmit);
 });
 
-uploadInput.addEventListener("change", () => {
-  const formData = new FormData();
-  formData.append("image", uploadInput.files[0]);
+async function handleSubmit(event) {
+  event.preventDefault();
 
-  fetch("/api/upload", {
-    method: "POST",
-    body: formData,
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      bannerPath = data.imageUrl;
-      bannerImage.style.backgroundImage = `url("${bannerPath}")`;
-    });
-});
+  const title = document.getElementById("title").value;
+  const summary = document.getElementById("summary").value;
+  const article = document.getElementById("article").value;
+  const bannerImageFile = document.getElementById("banner-image").files[0];
 
-publishBtn.addEventListener("click", () => {
-  if (
-    blogTitleField.value.length &&
-    blogSummaryField.value.length &&
-    articleFeild.value.length
-  ) {
-    // generating id
-    let letters = "abcdefghijklmnopqrstuvwxyz";
-    let blogTitle = blogTitleField.value.split(" ").join("-");
-    let id = "";
-    for (let i = 0; i < 4; i++) {
-      id += letters[Math.floor(Math.random() * letters.length)];
+  try {
+    let bannerImageUrl = "";
+    if (bannerImageFile) {
+      bannerImageUrl = await uploadImage(bannerImageFile);
     }
 
-    // setting up docName
-    let docName = `${blogTitle}-${id}`;
-    let date = new Date(); // for published at info
+    const blogPost = {
+      title,
+      summary,
+      article,
+      bannerImage: bannerImageUrl,
+    };
 
-    fetch("/api/blog", {
+    console.log("Sending blog post data:", blogPost);
+
+    const response = await fetch("/api/blog", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        title: blogTitleField.value,
-        article: articleFeild.value,
-        summary: blogSummaryField.value,
-        bannerImage: bannerPath,
-        publishedAt: date.toISOString(),
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Document written");
-        location.href = `/${data.id}`;
-      })
-      .catch((err) => {
-        console.error("Error adding document: ", err);
-      });
+      body: JSON.stringify(blogPost),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to create blog post");
+    }
+
+    const result = await response.json();
+    alert("Blog post created successfully!");
+    window.location.href = `/blog/${result.id}?id=${result.id}`;
+  } catch (error) {
+    console.error("Error details:", error);
+    alert(
+      "Failed to create blog post. Please try again. Error: " + error.message
+    );
   }
-});
+}
+
+async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to upload image");
+    }
+
+    const result = await response.json();
+    return result.imageUrl;
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw new Error("Failed to upload image: " + error.message);
+  }
+}

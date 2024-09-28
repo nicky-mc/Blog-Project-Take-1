@@ -1,25 +1,40 @@
-let blogId = decodeURI(location.pathname.split("/").pop());
+document.addEventListener("DOMContentLoaded", () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const blogId = urlParams.get("id");
 
-fetch(`/api/blog/${blogId}`)
-  .then((res) => res.json())
-  .then((data) => {
-    setupBlog(data);
-  })
-  .catch((err) => {
-    console.log(err);
-    location.replace("/");
-  });
+  if (blogId) {
+    fetchBlogPost(blogId);
+  } else {
+    displayError("No blog post ID provided");
+  }
+});
 
-const setupBlog = (data) => {
-  const banner = document.querySelector(".banner");
-  const blogTitle = document.querySelector(".title");
-  const titleTag = document.querySelector("title");
-  const publish = document.querySelector(".published");
-  const article = document.querySelector(".article");
+function fetchBlogPost(id) {
+  fetch(`/api/blog/${id}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      displayBlogPost(data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      displayError(
+        "An error occurred while fetching the blog post: " + error.message
+      );
+    });
+}
 
-  banner.style.backgroundImage = `url(${data.bannerImage})`;
+function displayBlogPost(post) {
+  document.getElementById("blog-title").textContent = post.title;
+}
 
-  titleTag.innerHTML += blogTitle.innerHTML = data.title;
-  publish.innerHTML += data.publishedAt;
-  article.innerHTML = data.article;
-};
+function displayError(message) {
+  const errorElement = document.createElement("p");
+  errorElement.textContent = message;
+  errorElement.style.color = "red";
+  document.getElementById("blog-post").appendChild(errorElement);
+}

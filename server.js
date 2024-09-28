@@ -1,10 +1,13 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const multer = require("multer");
-const path = require("path");
+import express from "express";
+import bodyParser from "body-parser";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
+import { db } from "./firebase.js";
 
-// Initialize Firebase Admin SDK (you'll need to add your own credentials)
-const { db } = require("./firebase");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const port = 3000;
 
@@ -32,12 +35,15 @@ app.get("/editor", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "editor.html"));
 });
 
-app.get("/:id", (req, res) => {
+app.get("/blog/:id", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "blog.html"));
 });
 
 app.post("/api/blog", (req, res) => {
   const { title, article, summary, bannerImage } = req.body;
+
+  console.log("Received blog post data:", { title, summary, bannerImage });
+  console.log("Article content length:", article ? article.length : 0);
 
   db.collection("blogs")
     .add({
@@ -48,28 +54,38 @@ app.post("/api/blog", (req, res) => {
       publishedAt: new Date().toISOString(),
     })
     .then((docRef) => {
+      console.log("Document written with ID: ", docRef.id);
       res.json({ id: docRef.id, message: "Blog post created successfully" });
     })
     .catch((error) => {
-      res.status(500).json({ error: "Error adding document" });
+      console.error("Error adding document: ", error);
+      res
+        .status(500)
+        .json({ error: "Error adding document", details: error.message });
     });
 });
 
 app.get("/api/blog/:id", (req, res) => {
   const id = req.params.id;
+  console.log("Fetching blog post with id:", id);
 
   db.collection("blogs")
     .doc(id)
     .get()
     .then((doc) => {
       if (!doc.exists) {
+        console.log("Document not found");
         res.status(404).json({ error: "Blog post not found" });
       } else {
+        console.log("Document data:", doc.data());
         res.json(doc.data());
       }
     })
     .catch((error) => {
-      res.status(500).json({ error: "Error fetching document" });
+      console.error("Error fetching document:", error);
+      res
+        .status(500)
+        .json({ error: "Error fetching document", details: error.message });
     });
 });
 
@@ -81,15 +97,16 @@ app.get("/api/blogs", (req, res) => {
       snapshot.forEach((doc) => {
         blogs.push({
           id: doc.id,
-          title: doc.data().title,
-          summary: doc.data().summary,
-          bannerImage: doc.data().bannerImage,
+          ...doc.data(),
         });
       });
       res.json(blogs);
     })
     .catch((error) => {
-      res.status(500).json({ error: "Error fetching blogs" });
+      console.error("Error fetching blogs: ", error);
+      res
+        .status(500)
+        .json({ error: "Error fetching blogs", details: error.message });
     });
 });
 

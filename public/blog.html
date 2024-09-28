@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog : </title>
-    <link rel="stylesheet" href="css/blog.css">
-</head>
-<body>
-    <nav class="navbar">
-        <img src="img/logo.png" class="logo" alt="">
-        <ul class="links-container">
-            <li class="link-item"><a href="/" class="link">home</a></li>
-            <li class="link-item"><a href="/editor" class="link">editor</a></li>
-        </ul>
-    </nav>
-
-    <div class="banner"></div>
-
-    <div class="blog">
-        <h1 class="title"></h1>
-        <p class="published"><span>published at - </p>
-        <div class="article"></div>
-    </div>
-
-    <script src="js/blog.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog Post</title>
+    <link rel="stylesheet" href="/css/blog.css" />
+  </head>
+  <body>
+    <header>
+      <h1>My Blog</h1>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/editor">New Post</a>
+      </nav>
+    </header>
+    <main>
+      <article id="blog-post">
+        <h2 id="blog-title"></h2>
+        <img id="blog-image" src="" alt="Blog post image" />
+        <div id="blog-content"></div>
+      </article>
+    </main>
+    <script src="/js/blog.js"></script>
+  </body>
 </html>

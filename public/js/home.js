@@ -1,22 +1,50 @@
-const blogsSection = document.querySelector(".blogs-section");
+document.addEventListener("DOMContentLoaded", () => {
+  fetchBlogPosts();
+});
 
-fetch("/api/blogs")
-  .then((res) => res.json())
-  .then((data) => {
-    blogsSection.innerHTML = ""; // Clear any existing content
-    data.forEach((blog) => {
-      blogsSection.innerHTML += `
-            <div class="blog-card">
-                <img src="${blog.bannerImage}" class="blog-image" alt="${blog.title}">
-                <h1 class="blog-title">${blog.title}</h1>
-                <p class="blog-overview">${blog.summary}</p>
-                <a href="/${blog.id}" class="btn dark">read</a>
-            </div>
-            `;
+function fetchBlogPosts() {
+  fetch("/api/blogs")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((blogs) => {
+      if (!Array.isArray(blogs)) {
+        throw new Error("Expected an array of blogs, but got: " + typeof blogs);
+      }
+      displayBlogPosts(blogs);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      displayError(
+        "An error occurred while fetching blog posts: " + error.message
+      );
     });
-  })
-  .catch((error) => {
-    console.error("Error fetching blogs:", error);
-    blogsSection.innerHTML =
-      "<p>Error loading blogs. Please try again later.</p>";
+}
+
+function displayBlogPosts(blogs) {
+  const blogList = document.getElementById("blog-list");
+  blogList.innerHTML = ""; // Clear existing content
+  if (blogs.length === 0) {
+    blogList.innerHTML = "<p>No blog posts found.</p>";
+    return;
+  }
+  blogs.forEach((blog) => {
+    const blogElement = document.createElement("article");
+    blogElement.innerHTML = `
+          <h2><a href="/blog/${blog.id}?id=${blog.id}">${blog.title}</a></h2>
+          <img src="${blog.bannerImage}" alt="${blog.title}">
+          <p>${blog.summary}</p>
+      `;
+    blogList.appendChild(blogElement);
   });
+}
+
+function displayError(message) {
+  const errorElement = document.createElement("p");
+  errorElement.textContent = message;
+  errorElement.style.color = "red";
+  document.getElementById("blog-list").appendChild(errorElement);
+}
